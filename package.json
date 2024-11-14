@@ -1,0 +1,19 @@
+{
+  "name": "java4ui-quickstart",
+  "version": "1.0.0",
+  "description": "A quickstart built to on the java4ui library working with Electron.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sasha-vovc/java4ui-quickstart.git"
+  },
+  "author": "Sasha Vovcenco",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sasha-vovc/java4ui-quickstart/issues"
+  },
+  "homepage": "https://github.com/sasha-vovc/java4ui-quickstart#readme"
+}
