@@ -4,7 +4,8 @@
   "description": "A quickstart built to on the java4ui library working with Electron.",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/sasha-vovc/java4ui-quickstart/issues"
   },
-  "homepage": "https://github.com/sasha-vovc/java4ui-quickstart#readme"
+  "homepage": "https://github.com/sasha-vovc/java4ui-quickstart#readme",
+  "devDependencies": {
+    "electron": "^33.2.0"
+  }
 }
