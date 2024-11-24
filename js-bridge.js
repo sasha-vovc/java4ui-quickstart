@@ -4,7 +4,6 @@ start();
 
 function start() {
     client = new WebSocket("ws://localhost:8080");
-    document.querySelector("h1").innerText = "Started";
     client.addEventListener("message", (e) => {
         let json = e.data;
         displayFormatted(`Packet received:\n${json}`);
@@ -33,7 +32,10 @@ function process(data) {
                 query(packetData.query, packetData.action);
             } else if (action.at(0) === "@") {
                 eventListener(packetData.query, packetData.action);
-            } else {
+            } else if(action.at(0) === "~"){
+                change(packetData.query, packetData.action);
+            }
+            else {
                 attrChange(packetData.query, packetData.action);
             }
             break;
@@ -47,6 +49,14 @@ function process(data) {
                 }
             }
         }
+    }
+}
+
+function change(query, action){
+    if(action.at(1) === "_"){
+        document.querySelector(query).innerText = action.substring(2);
+    }else{
+        document.querySelector(query).innerHTML = action.substring(2);
     }
 }
 
