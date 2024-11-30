@@ -2,6 +2,8 @@
 let client;
 start();
 
+const callbackArr = [];
+
 function start() {
     client = new WebSocket("ws://localhost:8080");
     client.addEventListener("message", (e) => {
@@ -34,6 +36,8 @@ function process(data) {
                 eventListener(packetData.query, packetData.action);
             } else if(action.at(0) === "~"){
                 change(packetData.query, packetData.action);
+            } else if(action.at(0) === "?"){
+                getter(packetData.query, packetData.action);
             }
             else {
                 attrChange(packetData.query, packetData.action);
@@ -50,6 +54,20 @@ function process(data) {
             }
         }
     }
+}
+
+function getter(query, action){
+    const element = document.querySelector(query);
+    const split = action.split("?");
+    const category = split[1];
+    const attr = split[2];
+    let getVal;
+    if(category === "HTML"){
+        getVal = element.getAttribute(attr);
+    }else if(category === "CSS"){
+        getVal = window.getComputedStyle(element).getPropertyValue(attr);
+    }
+    send(new PacketData("GETTER_RETURN", getVal));
 }
 
 function change(query, action){
@@ -130,23 +148,33 @@ function query(query, action) {
     }
 }
 
+
+
 function eventListener(query, action) {
     displayFormatted("Called eventListener(action, query)");
     const splitArray = action.split("@");
-    const event = splitArray[1];
-    const callbackIdx = splitArray[2];
-    displayFormatted(`Event: ${event}, callbackIdx: ${callbackIdx} for query: ${query}`);
+    const type = splitArray[1];
+    const event = splitArray[2];
+    const callbackIdx = splitArray[3];
+    displayFormatted(`Event: ${event}, callbackIdx: ${callbackIdx} for query: ${query}, type: ${type}`);
+    const eventHandler = () => send(new PacketData("LISTENER_RESPONSE", callbackIdx));
     if (query === "document") {
-        document.addEventListener(event, () => {
-            send(new PacketData("LISTENER_RESPONSE", callbackIdx));
-        });
+        if(type === "+") {
+            callbackArr.push(eventHandler);
+            document.addEventListener(event, eventHandler);
+        }else{
+            console.log(`Trying to remove: ${event}`);
+            document.removeEventListener(event, callbackArr[callbackIdx]);
+        }
     } else {
         const element = document.querySelector(query);
         console.log(`Element: ${element}`);
-        element.addEventListener(event, () => {
-            console.log(`idx: ${callbackIdx} called`);
-            send(new PacketData("LISTENER_RESPONSE", callbackIdx));
-        });
+        if(type === "+") {
+            callbackArr.push(eventHandler);
+            element.addEventListener(event, eventHandler);
+        }else{
+            element.removeEventListener(event, callbackArr[callbackIdx]);
+        }
     }
 }
 
