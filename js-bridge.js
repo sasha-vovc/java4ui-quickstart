@@ -16,40 +16,44 @@ function start() {
 function process(data) {
     const packetData = JSON.parse(data);
     //console.log(`Reason: ${packetData.reason}, query: ${packetData.query}, action: ${packetData.action}`);
-    switch (packetData.reason) {
-        case "CSS": {
-            styleChange(packetData.query, packetData.action);
-            break;
-        }
-        case "HTML": {
-            const action = packetData.action;
-            displayFormatted(`action.at(0): ${action.at(0)}`);
-            if (action.substring(0, 2) === "->") {
-                createElement(packetData.query, packetData.action, packetData.response);
-            } else if (action.substring(0, 1) === "-"
-                || action.substring(0, 1) === "+"
-                || action.substring(0, 1) === "/") {
-                classChange(packetData.query, packetData.action);
-            } else if (action.at(0) === "$") {
-                query(packetData.query, packetData.action);
-            } else if (action.at(0) === "@") {
-                eventListener(packetData.query, packetData.action);
-            } else if(action.at(0) === "~"){
-                change(packetData.query, packetData.action);
-            } else if(action.at(0) === "?"){
-                getter(packetData.query, packetData.action);
+    console.log(packetData["type"]);
+    if(packetData["type"] === "multi"){
+        packetData["jsons"].forEach(json => process(JSON.stringify(json)));
+    }else {
+        switch (packetData.reason) {
+            case "CSS": {
+                styleChange(packetData.query, packetData.action);
+                break;
             }
-            else {
-                attrChange(packetData.query, packetData.action);
+            case "HTML": {
+                const action = packetData.action;
+                displayFormatted(`action.at(0): ${action.at(0)}`);
+                if (action.substring(0, 2) === "->") {
+                    createElement(packetData.query, packetData.action, packetData.response);
+                } else if (action.substring(0, 1) === "-"
+                    || action.substring(0, 1) === "+"
+                    || action.substring(0, 1) === "/") {
+                    classChange(packetData.query, packetData.action);
+                } else if (action.at(0) === "$") {
+                    query(packetData.query, packetData.action);
+                } else if (action.at(0) === "@") {
+                    eventListener(packetData.query, packetData.action);
+                } else if (action.at(0) === "~") {
+                    change(packetData.query, packetData.action);
+                } else if (action.at(0) === "?") {
+                    getter(packetData.query, packetData.action);
+                } else {
+                    attrChange(packetData.query, packetData.action);
+                }
+                break;
             }
-            break;
-        }
-        default: { //for reasons: OTHER
-            const action = packetData.action;
-            switch (action) {
-                case "remove": {
-                    removeElement(packetData.query);
-                    break;
+            default: { //for reasons: OTHER
+                const action = packetData.action;
+                switch (action) {
+                    case "remove": {
+                        removeElement(packetData.query);
+                        break;
+                    }
                 }
             }
         }

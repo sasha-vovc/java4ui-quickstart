@@ -1,4 +1,4 @@
-import main.Init;
+import java4ui.Init;
 
 public class Main {
     public static void main(String[] args) {
